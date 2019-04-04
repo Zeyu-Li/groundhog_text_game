@@ -13,7 +13,7 @@ This is a text-based Python game
 import json
 import os
 import time
-import sys
+import sys, select
 
 
 class Print:
@@ -97,14 +97,17 @@ class Cover():
             # option switch statements
             if option in ("QUIT", "Q"):
                 Pr.slow("\nThanks for playing")
+                os.system('cls||echo -e \\\\033c')
                 return "break"
             elif option == "HELP":
                 Co.help()
             elif option == "ABOUT":
                 Co.about()
             elif option in ( "NEW GAME", "NEW", "N"):
+                os.system('cls||echo -e \\\\033c')
                 return "new"
             elif option in ("LOAD GAME", "LOAD", "L"):
+                os.system('cls||echo -e \\\\033c')
                 return "load"
             else:
                 Pr.regular("\n Your input is not recognized, please try again\n")
@@ -157,8 +160,6 @@ class Event:
 
     def beginning(self):
 
-        # TODO: continue adventure thing
-
         Pr.slow(""""
     2019: You fall into a nuclear dump site
 
@@ -172,16 +173,55 @@ class Event:
     With limited time on your non-exist hands, what do you do?
         """)
 
-        option = user_input().split(" ")
+        test = True
 
-        # switch statement for actions attempted by user
-        for action in option:
+        while test:
+            option = user_input().split(" ")
 
-            if action in ("LOOK", "OBSERVE"):
+            # switch statement for actions attempted by user
+            for action in option:
 
-                Pr.slow("You observe the hole and find that it is large enough for you to climb in")
+                if action in ("LOOK", "OBSERVE", "SEE", "PEEK", "VIEW"):
+                    Pr.slow("You observe the hole and find that it is large enough for you to climb in")
+                    continue
+                elif action in ("CRAWL", "CLIMB", "SNEAK"):
+                    test = False
+                    break
+                elif action in ("HINT", "AID", "HELP"):
+                    Pr.slow("Hint: What would a groundhog do?")
+                    continue
+                elif action in ("QUIT", "Q"):
+                    end()
+                    return 0
+                else:
+                    Pr.slow("Sorry, this action is not permitted, please try again")
 
-        return 0
+
+
+        Ev.one()
+
+    def one(self):
+
+    #     Pr.slow(""""
+    # You climb out of the hole and observe a few groundhogs,
+    # but something doesn't seem right.
+
+    # Upon closer inspection, you see most of the groundhogs as deformed
+
+    # However, you seem to have gotten too close, so the groundhogs are rush towards you
+
+    # You hope to dodge them
+
+    #     """)
+
+        Pr.slow("hit a")
+
+        select.select( [sys.stdin], [], [], 5 )
+
+        if (i):
+            Pr.slow("You dodged successfully, but another one is coming")
+        else:
+            Pr.slow("hit \"a\"")
 
 
 # start of standard functions
@@ -203,8 +243,16 @@ def stats():
                 'special': '5'
 
             }
-
             json.dump(stats, fp)
+
+        global area
+        area = 0
+        global hp
+        hp = 5
+        global attack
+        attack = 5
+        global special
+        special = 5
 
     else:
 
@@ -222,11 +270,34 @@ def stats():
 
         return False
 
+def end():
+
+    Pr.slow("\nThanks for playing")
+
+    with open('stats.json', 'w') as fp:
+        stats = {
+
+            'area': str(area),
+            'hp': str(hp),
+            'attack': str(attack),
+            'special': str(special)
+
+        }
+
+        json.dump(stats, fp)
+
+    return 0
+
 # init vars
+
 global area
+area = 0
 global hp
+hp = 5
 global attack
+attack = 5
 global special
+special = 5
 Ev = Event()
 Co = Cover()
 Pr = Print()
@@ -234,7 +305,8 @@ Pr = Print()
 
 def main():
 
-    option = Co.title()   
+    # option = Co.title()  
+    Ev.one() 
 
     # if break is called, end program
     if option == "break":
