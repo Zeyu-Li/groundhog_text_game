@@ -10,11 +10,11 @@ This is a text-based Python game
 """
 
 # import modules
-from threading import Timer
 import json
+import sys
 import os
 import time
-import sys
+import timeit
 
 
 class Print:
@@ -182,7 +182,7 @@ class Event:
             # switch statement for actions attempted by user
             for action in option:
 
-                if action in ("LOOK", "OBSERVE", "SEE", "PEEK", "VIEW"):
+                if action in ["LOOK", "OBSERVE", "SEE", "PEEK", "VIEW"]:
                     Pr.slow("You observe the hole and find that it is large enough for you to climb in")
                     continue
                 elif action in ("CRAWL", "CLIMB", "SNEAK"):
@@ -201,6 +201,8 @@ class Event:
 
     def one(self):
 
+        global values
+
     #     Pr.slow(""""
     # You climb out of the hole and observe a few groundhogs,
     # but something doesn't seem right.
@@ -215,15 +217,20 @@ class Event:
 
         game_state = loops(False, 5, "A")
 
-        if not game_state:
+        while not game_state:
 
-            Pr.slow("Game over")
-            return 0
+            if values[1] == 0:
+                
+                Pr.slow("Game over")
+                return 0
 
-        else:
+            values[1] = values[1] - 1
+            Pr.slow("You took 1 damage")
+            print(f"You have {values[1]} hp")
+            game_state = loops(False, 5, "A")
 
-            Pr.slow("You now have a time to pause, what do you do?")
-            print("| Attack | Run | Hide |")
+        Pr.slow("You now have a time to pause, what do you do?")
+        print("| Attack | Run | Hide |")
 
         test = True
 
@@ -246,33 +253,35 @@ def user_input():
 
     return (str(input("> ").strip())).upper()
 
-def time_ran_out():
-
-    global out_of_time
-    out_of_time = True
-
-def loops(out_of_time, time, button, tries = 5):
+def loops(out_of_time, time_reqested, button, tries = 5):
 
     for i in range(tries):
 
-        t = Timer(time, time_ran_out())
+        start_time = time.clock()
         user_input = str(input(f"Hit \"{button}\": ").strip()).upper()
-        t.start()
+        end_time = time.clock()
 
-        if (user_input == button) and (not out_of_time):
+        print(end_time - start_time)
+
+        if (user_input == button):
+            
+            if end_time - start_time > time_reqested:
+
+                print("Too slow. Try again\n")
+                continue
+
             Pr.slow("You dodged successfully")
-            t.cancel()
             return True
         else:
             if i == 5:
-                t.cancel()
                 return False
-            t.cancel()
             Pr.slow("It's getting closer")
             out_of_time = False
             continue
 
 def stats():
+
+    global values
 
     if not os.path.exists('stats.json'):
 
@@ -281,21 +290,13 @@ def stats():
 
                 'area': '0',
                 'hp': '5',
-                'attack': '5',
-                'special': '5'
+                'attack': '5'
 
             }
             json.dump(stats, fp)
 
         # TODO: if enough time, change this to a list
-        global area
-        area = 0
-        global hp
-        hp = 5
-        global attack
-        attack = 5
-        global special
-        special = 5
+        values = [0, 5, 5]
 
     else:
 
@@ -303,12 +304,13 @@ def stats():
 
             stats = json.load(fp)
 
-            area = list(stats.values())[0]
-            hp = list(stats.values())[1]
-            attack = list(stats.values())[2]
-            special = list(stats.values())[3]
+            
 
-        if area != 0:
+            values[0] = list(stats.values())[0]
+            values[1] = list(stats.values())[1]
+            values[2] = list(stats.values())[2]
+
+        if values[0] != 0:
             return True
 
         return False
@@ -320,10 +322,9 @@ def end():
     with open('stats.json', 'w') as fp:
         stats = {
 
-            'area': str(area),
-            'hp': str(hp),
-            'attack': str(attack),
-            'special': str(special)
+            'area': str(area[0]),
+            'hp': str(hp[1]),
+            'attack': str(attack[2])
 
         }
 
@@ -331,14 +332,8 @@ def end():
 
 # init vars
 # TODO: if enough time, change this to a list
-global area
-area = 0
-global hp
-hp = 5
-global attack
-attack = 5
-global special
-special = 5
+global values
+values = [0, 5, 5]
 Ev = Event()
 Co = Cover()
 Pr = Print()
