@@ -10,10 +10,11 @@ This is a text-based Python game
 """
 
 # import modules
+from threading import Timer
 import json
 import os
 import time
-import sys, select
+import sys
 
 
 class Print:
@@ -196,8 +197,6 @@ class Event:
                 else:
                     Pr.slow("Sorry, this action is not permitted, please try again")
 
-
-
         Ev.one()
 
     def one(self):
@@ -214,14 +213,19 @@ class Event:
 
     #     """)
 
-        Pr.slow("hit a")
+        game_state = loops(False, 5, "A")
 
-        select.select( [sys.stdin], [], [], 5 )
+        if not game_state:
 
-        if (i):
-            Pr.slow("You dodged successfully, but another one is coming")
+            Pr.slow("Game over")
+            return 0
+
         else:
-            Pr.slow("hit \"a\"")
+
+            Pr.slow("You now have a time to pause, what do you do?")
+
+
+
 
 
 # start of standard functions
@@ -229,6 +233,31 @@ def user_input():
 
     return (str(input("> ").strip())).upper()
 
+def time_ran_out():
+
+    global out_of_time
+    out_of_time = True
+
+def loops(out_of_time, time, button, tries = 5):
+
+    for i in range(tries):
+
+        t = Timer(time, time_ran_out())
+        user_input = str(input(f"Hit \"{button}\": ").strip()).upper()
+        t.start()
+
+        if (user_input == button) and (not out_of_time):
+            Pr.slow("You dodged successfully")
+            t.cancel()
+            return True
+        else:
+            if i == 5:
+                t.cancel()
+                return False
+            t.cancel()
+            Pr.slow("It's getting closer")
+            out_of_time = False
+            continue
 
 def stats():
 
@@ -245,6 +274,7 @@ def stats():
             }
             json.dump(stats, fp)
 
+        # TODO: if enough time, change this to a list
         global area
         area = 0
         global hp
@@ -286,10 +316,8 @@ def end():
 
         json.dump(stats, fp)
 
-    return 0
-
 # init vars
-
+# TODO: if enough time, change this to a list
 global area
 area = 0
 global hp
