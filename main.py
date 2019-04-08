@@ -223,9 +223,22 @@ class Event:
         else:
 
             Pr.slow("You now have a time to pause, what do you do?")
+            print("| Attack | Run | Hide |")
 
+        test = True
 
+        while test:
 
+            option = user_input()
+
+            if option == "ATTACK":
+                Pr.slow("You hit the first groundhog and it falls")
+                test = False
+                break
+            elif option == "HIDE":
+                Pr.slow("Stop hiding")
+            elif option == "RUN":
+                Pr.slow("Don't be a coward")
 
 
 # start of standard functions
@@ -333,19 +346,20 @@ Pr = Print()
 
 def main():
 
-    # option = Co.title()  
-    Ev.one() 
+    # option = Co.title()
 
-    # if break is called, end program
-    if option == "break":
-        return 0
-    elif option == "new":
-        Ev.beginning()
-    elif option == "load":
+    # # if break is called, end program
+    # if option == "break":
+    #     return 0
+    # elif option == "new":
+    #     Ev.beginning()
+    # elif option == "load":
 
-        # TODO: switch statements?
-        return 0
+        # # TODO: switch statements?
+        # return 0
 
+    Ev.one()
+    end()
     return 0
 
 # system calls name
