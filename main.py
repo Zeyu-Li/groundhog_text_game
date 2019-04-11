@@ -197,7 +197,7 @@ class Event:
                 else:
                     Pr.slow("Sorry, this action is not permitted, please try again")
 
-        Ev.one()
+        super().one()
 
     def one(self):
 
@@ -218,19 +218,13 @@ class Event:
         game_state = loops(False, 5, "A")
 
         while not game_state:
-
-            if values[1] == 0:
-                
-                Pr.slow("Game over")
+            if damage(game_state):
                 return 0
 
-            values[1] = values[1] - 1
-            Pr.slow("You took 1 damage")
-            print(f"You have {values[1]} hp")
             game_state = loops(False, 5, "A")
 
         Pr.slow("You now have a time to pause, what do you do?")
-        print("| Attack | Run | Hide |")
+        print("| Attack | Run | Hide | Quit |")
 
         test = True
 
@@ -246,7 +240,32 @@ class Event:
                 Pr.slow("Stop hiding")
             elif option == "RUN":
                 Pr.slow("Don't be a coward")
+            elif option in ("QUIT", "Q"):
+                end()
+                return 0
 
+
+        Pr.slow("Another one is running towards you, what do you do?")
+        print("| Attack | Run | Hide |")
+
+        test = True
+        while test:
+
+            option = user_input()
+
+            if option == "ATTACK":
+                game_state = loops(False, 4, "B")
+                if not game_state:
+                    Pr.slow("You did not hit the groundhog and it claws you")
+                    Pr.slow("You took 1 damage")
+                print(f"You have {values[1]} hp")
+                Pr.slow("You hit the Second groundhog and it falls")
+                test = False
+                break
+            elif option == "HIDE":
+                Pr.slow("Stop hiding")
+            elif option == "RUN":
+                Pr.slow("You run around, but you will never outrun or out tire the groundhog")
 
 # start of standard functions
 def user_input():
@@ -278,6 +297,17 @@ def loops(out_of_time, time_reqested, button, tries = 5):
             Pr.slow("It's getting closer")
             out_of_time = False
             continue
+
+def damage(game_state):
+
+    if values[1] == 0:
+        
+        Pr.slow("Game over")
+        return True
+
+    values[1] = values[1] - 1
+    Pr.slow("You took 1 damage")
+    print(f"You have {values[1]} hp")
 
 def stats():
 
