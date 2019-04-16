@@ -9,7 +9,7 @@ By: Andrew Li
 This is a text-based Python game that puts you at the site of the action
 """
 
-from print import slow, stylized
+from cout import slow, stylized
 import json
 import os
 import time
@@ -17,15 +17,20 @@ import time
 
 class Cover:
 
-    output('title', 'p')
+    def title(self):
+        output("title", "p")
 
 
-def output(part, print):
+def output(part, _print):
+    with open('text.json', 'r') as fp:
+        text = json.load(fp)
+
+    print(text[part])
 
 
 def main():
 
-    
+    Cover().title()
 
 # system calls name
 if __name__ == "__main__":

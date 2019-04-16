@@ -4,78 +4,21 @@ Description:
 """
 import json
 
+
 def main():
 
-    with open('text.json', 'w') as f:
-        text = {
+    text = {
 
-        'title': """
-    |||||     |||||    |||||   ||     |||
-    ||  ||   |     |  |     |  ||||  ||||
-    ||   ||  |     |  |     |  || |||| ||
-    ||   ||  |     |  |     |  ||  ||  ||
-    ||  ||   |     |  |     |  ||      ||
-    |||||     |||||    |||||   ||      ||
+        'title': "\r\n    |||||     |||||    |||||   ||     |||\r\n    ||  ||   |     |  |     |  ||||  ||||\r\n    ||   ||  |     |  |     |  || |||| ||\r\n    ||   ||  |     |  |     |  ||  ||  ||\r\n    ||  ||   |     |  |     |  ||      ||\r\n    |||||     |||||    |||||   ||      ||\r\n\r\n\r\n             |||||     ||||\r\n            |     |   |   ||\r\n            |     |   | |||\r\n            |     |   |||\r\n            |     |   | ||\r\n             |||||    |  ||\r\n\r\n\r\n|||||  ||      |||||    |||||   ||     |||\r\n||  || ||     |     |  |     |  ||||  ||||\r\n|||||  ||     |     |  |     |  || |||| ||\r\n||  || ||     |     |  |     |  ||  ||  ||\r\n||  || ||     |     |  |     |  ||      ||\r\n|||||  ||||||  |||||    |||||   ||      ||\r\n",
 
-
-             |||||     ||||
-            |     |   |   ||
-            |     |   | |||
-            |     |   |||
-            |     |   | ||
-             |||||    |  ||
-
-
-|||||  ||      |||||    |||||   ||     |||
-||  || ||     |     |  |     |  ||||  ||||
-|||||  ||     |     |  |     |  || |||| ||
-||  || ||     |     |  |     |  ||  ||  ||
-||  || ||     |     |  |     |  ||      ||
-|||||  ||||||  |||||    |||||   ||      ||
-""",
-
-        'help': """
-
-    To start this game, enter \"new game\", \"new\", or \"n\".
-    If you have previously played this game,
-    you should see load game that can be activated if 
-    \"load game\", \"load\", or \"l\" is entered.
-
-    WARNING: if you start a new game, the saved game will be overwritten!
-
-    If you want to report a bug, go to the following url:
-    https://github.com/Zeyu-Li/text_game/issues
-
-    Suggestions will also be accepted and feel free to fork this project
-    ** remember this is licensed with the MIT license
-
-    To continue, press the enter key
-
-        """,
+        'help': "\r\n    To start this game, enter \"new game\", \"new\", or \"n\".\r\n    If you have previously played this game,\r\n    you should see load game that can be activated if \r\n    \"load game\", \"load\", or \"l\" is entered.\r\n\r\n    WARNING: if you start a new game, the saved game will be overwritten!\r\n\r\n    If you want to report a bug, go to the following url:\r\n    https:\/\/github.com\/Zeyu-Li\/text_game\/issues\r\n\r\n    Suggestions will also be accepted and feel free to fork this project\r\n    ** remember this is licensed with the MIT license\r\n\r\n    To continue, press the enter key\r\n\r\n",
         
-    'about': """
-    This is a text-based Python game made for a class project.
+    'about': "\r\n    This is a text-based Python game made for a class project.\r\n\r\n    If you wish to modify it, please read license,\r\n    other than that, please enjoy the game ;)\r\n\r\n    To continue, press the enter key\r\n\r\n",
 
-    If you wish to modify it, please read license,
-    other than that, please enjoy the game ;)
-
-    To continue, press the enter key
-
-    """,
-
-    'Ev1': """"
-    2019: You fall into a nuclear dump site
-
-    Yearning for sunlight to photosynthesize,
-    you venture with your newly mutated roots
-    in hopes of reaching fresh air and sunlight
-
-    As you wonder around on your studded roots,
-    you find a small hole
-
-    With limited time on your non-exist hands, what do you do?
-        """,
+    'Ev1': "\r\n    2019: You fall into a nuclear dump site\r\n\r\n    Yearning for sunlight to photosynthesize,\r\n    you venture with your newly mutated roots\r\n    in hopes of reaching fresh air and sunlight\r\n\r\n    As you wonder around on your studded roots,\r\n    you find a small hole\r\n\r\n    With limited time on your non-exist hands, what do you do?\r\n"
         }
+
+    with open('text.json', 'w') as f:
         json.dump(text, f)
     return 0
 
