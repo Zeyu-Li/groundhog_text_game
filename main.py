@@ -99,18 +99,24 @@ class Options:
                 return False
             else:
                 slow("Sorry, this action is not permitted, please try again")
+                slow("or enter help")
                 return True
 
 
 class Fight:
 
     global enemies
+    global quit_flag
 
     def tutorial(self):
         self.tutorial_enemy_attack("groundhog")
+        if quit_flag:
+            return "quit"
+        slow("Now you have dodged the groundhog and there is time to do something. What do you do? ")
+        print("| Attack | Run | Hide | Quit |")
 
     def tutorial_enemy_attack(self, enemy):
-        special_loops(4, "A")
+        special_loops(4, "A", "groundhog")
 
 
 class Events:
@@ -136,14 +142,27 @@ class Events:
     def one(self):
         # output("Ev2", "s")
         Fight().tutorial()
+
+        if quit_flag:
+            return 0
+
+        values["area"] = 2
+
         self.two()
 
     def two(self):
         pass
+
+        values["area"] = 3
+
         self.three()
 
     def three(self):
-        pass
+
+
+
+        values["area"] = 4
+
         self.four()
 
     def four(self):
@@ -200,30 +219,37 @@ def output(part, type_):
         slow(text[part])
 
 
-def special_loops(time_requested, button, tries=4):
-    for i in range(tries):
+def special_loops(time_requested, button, enemy, tries=4):
+    global enemies
+    global quit_flag
+    test = True
+    while test:
+        for i in range(tries):
 
-        start_time = time.clock()
-        user_input = str(input(f"Hit \"{button}\": ").strip()).upper()
-        end_time = time.clock()
+            start_time = time.time()
+            user_input = str(input(f"Hit \"{button}\": ").strip()).upper()
+            end_time = time.time()
 
-        if user_input == button:
-            if end_time - start_time > time_requested:
-                print("Too slow. Try again\n")
-                continue
-
-            slow("You dodged successfully")
-            return True
-        else:
-            if i == tries:
-                if not values['hp'] - enemies[enemy]["attack"] == 0:
-                    values['hp'] = values['hp'] - enemies[enemy]["attack"]
-                    slow("You took 1 damage.")
-                    slow(f"Now you have {values['hp']} hp left")
+            if user_input == button:
+                if end_time - start_time > time_requested:
+                    print("Too slow. Try again\n")
                     continue
-                slow("The groundhog missed")
-                continue
-            slow("It's getting closer")
+
+                slow("You dodged successfully")
+                return True
+            elif user_input in ("Q", "QUIT"):
+                quit_flag = True
+                return 0
+            else:
+                if i == tries-1:
+                    if not values['hp'] - enemies[enemy]["attack"] == 0:
+                        values['hp'] = values['hp'] - enemies[enemy]["attack"]
+                        slow("You took 1 damage.")
+                        slow(f"Now you have {values['hp']} hp left")
+                        continue
+                    slow("The groundhog missed")
+                    continue
+                slow("It's getting closer")
 
 
 def main():
