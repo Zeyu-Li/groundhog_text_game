@@ -111,7 +111,6 @@ class Fight:
 
     def tutorial_enemy_attack(self, enemy):
         special_loops(4, "A")
-        enemies[enemy]["attack"]
 
 
 class Events:
@@ -122,7 +121,7 @@ class Events:
         pass
 
     def begin(self):
-        output("Ev1", "s")
+        # output("Ev1", "s")
         test = True
         while test:
             test = Options().event_1_1()
@@ -135,7 +134,7 @@ class Events:
         self.one()
 
     def one(self):
-        output("Ev2", "s")
+        # output("Ev2", "s")
         Fight().tutorial()
         self.two()
 
@@ -213,12 +212,18 @@ def special_loops(time_requested, button, tries=4):
                 print("Too slow. Try again\n")
                 continue
 
-            Pr.slow("You dodged successfully")
+            slow("You dodged successfully")
             return True
         else:
             if i == tries:
-                return False
-            Pr.slow("It's getting closer")
+                if not values['hp'] - enemies[enemy]["attack"] == 0:
+                    values['hp'] = values['hp'] - enemies[enemy]["attack"]
+                    slow("You took 1 damage.")
+                    slow(f"Now you have {values['hp']} hp left")
+                    continue
+                slow("The groundhog missed")
+                continue
+            slow("It's getting closer")
 
 
 def main():
