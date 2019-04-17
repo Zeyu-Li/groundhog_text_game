@@ -1,11 +1,19 @@
 # Python Game
 ## About 
 
-This is a Python text-based game
+This is a Python text-based game for school
+
+** Still in progress
 
 ## Usage
 
-Navigate using ternimal
-If you are lost, use the help option in main menu
+To activate this program, type
 
-** Still in progress
+    python main.py #on Windows
+
+or
+
+    python3 main.py #on Macs
+
+Navigate using ternimal since this is a text based game
+If you are lost, use the help option in main menu

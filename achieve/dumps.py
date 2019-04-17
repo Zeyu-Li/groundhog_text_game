@@ -15,8 +15,12 @@ def main():
         
     'about': "\r\n    This is a text-based Python game made for a class project.\r\n\r\n    If you wish to modify it, please read license,\r\n    other than that, please enjoy the game ;)\r\n\r\n    To continue, press the enter key\r\n\r\n",
 
-    'Ev1': "\r\n    2019: You fall into a nuclear dump site\r\n\r\n    Yearning for sunlight to photosynthesize,\r\n    you venture with your newly mutated roots\r\n    in hopes of reaching fresh air and sunlight\r\n\r\n    As you wonder around on your studded roots,\r\n    you find a small hole\r\n\r\n    With limited time on your non-exist hands, what do you do?\r\n"
-        }
+    'Ev1': "\r\n    2019: You fall into a nuclear dump site\r\n\r\n    Yearning for sunlight to photosynthesize,\r\n    you venture with your newly mutated roots\r\n    in hopes of reaching fresh air and sunlight\r\n\r\n    As you wonder around on your studded roots,\r\n    you find a small hole\r\n\r\n    With limited time on your non-exist hands, what do you do?\r\n",
+
+    'Ev2': "You climb out of the hole and observe a few groundhogs but something doesn't seem right.\r\nUpon closer inspection, you see most of the groundhogs as deformed!\r\n\r\nHowever, you seem to have gotten too close, so the groundhogs are rush towards you.\r\nYou hope to dodge them",
+
+
+    }
 
     with open('text.json', 'w') as f:
         json.dump(text, f)

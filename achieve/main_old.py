@@ -177,17 +177,17 @@ class Event:
 
         global values
 
-    #     Pr.slow(""""
-    # You climb out of the hole and observe a few groundhogs,
-    # but something doesn't seem right.
+        Pr.slow(""""
+    You climb out of the hole and observe a few groundhogs,
+    but something doesn't seem right.
 
-    # Upon closer inspection, you see most of the groundhogs as deformed
+    Upon closer inspection, you see most of the groundhogs as deformed
 
-    # However, you seem to have gotten too close, so the groundhogs are rush towards you
+    However, you seem to have gotten too close, so the groundhogs are rush towards you
 
-    # You hope to dodge them
+    You hope to dodge them
 
-    #     """)
+        """)
 
         game_state = loops(False, 5, "A")
 

@@ -4,7 +4,7 @@ import sys
 
 def stylized(text):
 
-    print(f"---==  {text}  ==---\n".center(60))
+    print(f"---==  {text}  ==---\n".center(42))
     return 0
 
 
