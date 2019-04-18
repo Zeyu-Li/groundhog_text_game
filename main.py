@@ -175,7 +175,7 @@ class Fight:
                 return "quit"
 
         Options(2).event_2
-            # TODO: fight options
+        # TODO: fight options
 
     def tutorial_enemy_attack(self, enemy):
         """ tutorial enemy attack; It is impossible to die """
@@ -190,7 +190,6 @@ class Fight:
             game_over()
         elif quit_flag:
             return "quit"
-        # TODO: enemy attack
 
 
 class Events:
