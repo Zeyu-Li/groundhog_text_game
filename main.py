@@ -9,11 +9,15 @@ By: Andrew Li
 This is a text-based Python game that puts you at the site of the action
 """
 
+# import from custom module
 from cout import slow, stylized
+# import from STL
 import json
 import os
 import time
+import random
 
+# global vars
 global values
 values = {}
 global quit_flag
@@ -31,16 +35,19 @@ enemies = {
 
 
 class Cover:
+    """" this class houses the cover screen for the game when it loads in """
 
     def __init__(self):
         output("title", "p")
 
     def options(self):
+        """ options for title screen """
+
         test = True
         load = stats()
         while test:
             stylized("NEW GAME")
-            if not load:
+            if load:
                 stylized("LOAD GAME")
             stylized("HELP")
             stylized("ABOUT")
@@ -69,21 +76,29 @@ class Cover:
                 print("\n Your input is not recognized, please try again\n")
 
     def help(self):
+        """ Outputs help text """"
+
         output("help", "p")
         delay = input()
 
     def about(self):
+        """ Outputs about text """"
+
         output("about", "p")
         delay = input()
 
 
 class Options:
+    """ this class hold methods for whenever a action require options """"
+
+    global quit_flag
 
     def __init__(self):
         self.option = user_input().split(" ")
 
-    def event_1_1(self):
-        global quit_flag
+    def event_1(self):
+        """ first intro event """"
+
         for action in self.option:
             if action in ("LOOK", "OBSERVE", "SEE", "PEEK", "VIEW"):
                 slow("\nYou observe the hole and find that it is large enough")
@@ -102,24 +117,59 @@ class Options:
                 slow("or enter help")
                 return True
 
+    def event_2(self):
+        """ fighting option menu """"
+
+        test = True
+        while test:
+            print("| Attack | Run | Hide | Quit |")
+            option = user_input()
+            if option == "ATTACK":
+                slow("You hit the first groundhog and it falls to the ground")
+                break
+            elif option == "HIDE":
+                slow("Stop hiding")
+                continue
+            elif option == "RUN":
+                slow("Don't be a coward")
+                continue
+            elif option in ("QUIT", "Q"):
+                quit_flag = True
+                return 0
+            else:
+                slow("That is not a possible option")
+
 
 class Fight:
+    """ class for fight sequences """"
 
     global enemies
     global quit_flag
 
     def tutorial(self):
+        """ tutorial fight sequence """"
+
+        global quit_flag
         self.tutorial_enemy_attack("groundhog")
         if quit_flag:
             return "quit"
-        slow("Now you have dodged the groundhog and there is time to do something. What do you do? ")
-        print("| Attack | Run | Hide | Quit |")
+        slow("Now you have dodged the groundhog and there is time to do" +
+             "something. What do you do?")
+
+        Options().event_2()
+
+        if quit_flag:
+            return "quit"
+
+        level_up()
 
     def tutorial_enemy_attack(self, enemy):
+        """ tutorial enemy attack; It is impossible to die """"
         special_loops(4, "A", "groundhog")
 
 
 class Events:
+    """ timeline of events """"
 
     global quit_flag
 
@@ -127,10 +177,12 @@ class Events:
         pass
 
     def begin(self):
-        # output("Ev1", "s")
+        """ tutorial """"
+
+        output("Ev1", "s")
         test = True
         while test:
-            test = Options().event_1_1()
+            test = Options().event_1()
 
         if quit_flag:
             return 0
@@ -140,7 +192,9 @@ class Events:
         self.one()
 
     def one(self):
-        # output("Ev2", "s")
+        """ tutorial fight sequence """"
+
+        output("Ev2", "s")
         Fight().tutorial()
 
         if quit_flag:
@@ -151,6 +205,8 @@ class Events:
         self.two()
 
     def two(self):
+        """ another fight sequence """"
+
         pass
 
         values["area"] = 3
@@ -158,8 +214,7 @@ class Events:
         self.three()
 
     def three(self):
-
-
+        pass
 
         values["area"] = 4
 
@@ -173,6 +228,7 @@ class Events:
 
 
 def stats():
+    """ grab and dump stats from player some json file """"
 
     global values
 
@@ -181,6 +237,7 @@ def stats():
             stats = {
                 "area": "0",
                 "hp": "5",
+                "max_hp": "5",
                 "attack": "1"
             }
             json.dump(stats, fp)
@@ -188,6 +245,7 @@ def stats():
         values = {
             "area": 0,
             "hp": 5,
+            "max_hp": 5,
             "attack": 1
             }
 
@@ -198,18 +256,26 @@ def stats():
             stats = json.load(fp)
             values["area"] = int(stats['area'])
             values["hp"] = int(stats['hp'])
+            values["max_hp"] = int(stats['max_hp'])
             values["attack"] = int(stats['attack'])
 
         if values["area"] == 0:
-            return True
+            return False
+        return True
 
 
 def user_input():
+    """ getting user input from terminal """"
 
     return (str(input("> ").strip())).upper()
 
 
 def output(part, type_):
+    """ outputs string in variety of ways from the text.json file
+    - part is the requested printing section
+    - type_ is how to print pat (p = standard print; s = slow print)
+    """"
+
     with open('text.json', 'r') as fp:
         text = json.load(fp)
 
@@ -220,6 +286,13 @@ def output(part, type_):
 
 
 def special_loops(time_requested, button, enemy, tries=4):
+    """" sequence for tutorial fight; you must hit a button by
+    time_requested amount of time
+    time_requested = time needed to accomplish button press
+    button = button that needs to be pressed
+    enemy = attacking enemy
+    tries = number of tries till the enemy hits you"""
+
     global enemies
     global quit_flag
     test = True
@@ -244,12 +317,45 @@ def special_loops(time_requested, button, enemy, tries=4):
                 if i == tries-1:
                     if not values['hp'] - enemies[enemy]["attack"] == 0:
                         values['hp'] = values['hp'] - enemies[enemy]["attack"]
+                        slow(f"The {enemy} has hit you!")
                         slow("You took 1 damage.")
                         slow(f"Now you have {values['hp']} hp left")
                         continue
                     slow("The groundhog missed")
                     continue
                 slow("It's getting closer")
+
+
+def level_up():
+    """ level up sequence """
+
+    values["attack"] = values["attack"] + 1
+    values["max_hp"] = values["max_hp"] + random.randint(1, 2)
+    max_hp = values["max_hp"]
+    attack = values["attack"]
+
+    slow(f"Good job, you leveled up\n HP: {max_hp}, Attack: {attack} ")
+
+    values["hp"] = values["max_hp"]
+
+
+def end():
+    """ closing method that stores the values such as hp, attack, etc """
+
+    global values
+    with open('stats.json', 'w') as fp:
+        stats = {
+
+            'area': str(values["area"]),
+            'hp': str(values["hp"]),
+            'max_hp': str(values["max_hp"]),
+            'attack': str(values["attack"])
+
+        }
+
+        json.dump(stats, fp)
+
+# main call function
 
 
 def main():
@@ -273,6 +379,8 @@ def main():
         return 0
 
     slow("\nThanks for playing")
+
+    end()
     time.sleep(1.2)
     os.system('cls')
 
