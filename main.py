@@ -30,12 +30,11 @@ enemies = {
         'attack': 1
 
     }
-
 }
 
 
 class Cover:
-    """" this class houses the cover screen for the game when it loads in """
+    """ this class houses the cover screen for the game when it loads in """
 
     def __init__(self):
         output("title", "p")
@@ -57,6 +56,8 @@ class Cover:
 
             if option in ("NEW GAME", "NEW", "N"):
                 os.system('cls')
+                os.remove("stats.json")
+                stats()
                 return "new"
             elif option in ("LOAD GAME", "LOAD", "L"):
                 os.system('cls')
@@ -76,28 +77,32 @@ class Cover:
                 print("\n Your input is not recognized, please try again\n")
 
     def help(self):
-        """ Outputs help text """"
+        """ Outputs help text """
 
         output("help", "p")
         delay = input()
 
     def about(self):
-        """ Outputs about text """"
+        """ Outputs about text """
 
         output("about", "p")
         delay = input()
 
 
 class Options:
-    """ this class hold methods for whenever a action require options """"
+    """ this class hold methods for whenever a action require options """
 
     global quit_flag
 
-    def __init__(self):
+    def __init__(self, options):
+        """ get user input """
+
+        if options == 2:
+            print("| Attack | Run | Hide | Quit |")
         self.option = user_input().split(" ")
 
     def event_1(self):
-        """ first intro event """"
+        """ first intro event """
 
         for action in self.option:
             if action in ("LOOK", "OBSERVE", "SEE", "PEEK", "VIEW"):
@@ -118,22 +123,20 @@ class Options:
                 return True
 
     def event_2(self):
-        """ fighting option menu """"
+        """ fighting option menu """
 
         test = True
         while test:
-            print("| Attack | Run | Hide | Quit |")
-            option = user_input()
-            if option == "ATTACK":
+            if self.option == "ATTACK":
                 slow("You hit the first groundhog and it falls to the ground")
                 break
-            elif option == "HIDE":
+            elif self.option == "HIDE":
                 slow("Stop hiding")
                 continue
-            elif option == "RUN":
+            elif self.option == "RUN":
                 slow("Don't be a coward")
                 continue
-            elif option in ("QUIT", "Q"):
+            elif self.option in ("QUIT", "Q"):
                 quit_flag = True
                 return 0
             else:
@@ -141,48 +144,56 @@ class Options:
 
 
 class Fight:
-    """ class for fight sequences """"
+    """ class for fight sequences """
 
     global enemies
     global quit_flag
 
     def tutorial(self):
-        """ tutorial fight sequence """"
+        """ tutorial fight sequence """
 
-        global quit_flag
         self.tutorial_enemy_attack("groundhog")
         if quit_flag:
             return "quit"
         slow("Now you have dodged the groundhog and there is time to do" +
              "something. What do you do?")
 
-        Options().event_2()
+        Options(2).event_2()
 
         if quit_flag:
             return "quit"
 
         level_up()
 
+    def normal(self, enemy_, time, possible_button):
+        """ this is how a normal non-tutorial enemy is fought """
+
+        alive = True
+        while alive:
+            self.enemy_attack()
+            # TODO: fight options
+
     def tutorial_enemy_attack(self, enemy):
-        """ tutorial enemy attack; It is impossible to die """"
-        special_loops(4, "A", "groundhog")
+        """ tutorial enemy attack; It is impossible to die """
+        special_loops(4, "A", enemy)
+
+    def enemy_attack(self):
+        """ first real enemy (can die) """
+        # TODO: enemy attack
 
 
 class Events:
-    """ timeline of events """"
+    """ timeline of events """
 
     global quit_flag
 
-    def __init__(self):
-        pass
-
     def begin(self):
-        """ tutorial """"
+        """ tutorial """
 
         output("Ev1", "s")
         test = True
         while test:
-            test = Options().event_1()
+            test = Options(1).event_1()
 
         if quit_flag:
             return 0
@@ -192,7 +203,7 @@ class Events:
         self.one()
 
     def one(self):
-        """ tutorial fight sequence """"
+        """ tutorial fight sequence """
 
         output("Ev2", "s")
         Fight().tutorial()
@@ -205,9 +216,13 @@ class Events:
         self.two()
 
     def two(self):
-        """ another fight sequence """"
+        """ another fight sequence """
 
-        pass
+        slow("Now, you have defeated the groundhog, a second one approaches")
+        Fight().normal("groundhog", 2, ("B", "A"))
+
+        if quit_flag:
+            return 0
 
         values["area"] = 3
 
@@ -215,6 +230,7 @@ class Events:
 
     def three(self):
         pass
+        # TODO: third event (another looking sequence)
 
         values["area"] = 4
 
@@ -228,7 +244,7 @@ class Events:
 
 
 def stats():
-    """ grab and dump stats from player some json file """"
+    """ grab and dump stats from player some json file """
 
     global values
 
@@ -265,7 +281,7 @@ def stats():
 
 
 def user_input():
-    """ getting user input from terminal """"
+    """ getting user input from terminal """
 
     return (str(input("> ").strip())).upper()
 
@@ -274,7 +290,7 @@ def output(part, type_):
     """ outputs string in variety of ways from the text.json file
     - part is the requested printing section
     - type_ is how to print pat (p = standard print; s = slow print)
-    """"
+    """
 
     with open('text.json', 'r') as fp:
         text = json.load(fp)
@@ -286,7 +302,7 @@ def output(part, type_):
 
 
 def special_loops(time_requested, button, enemy, tries=4):
-    """" sequence for tutorial fight; you must hit a button by
+    """ sequence for tutorial fight; you must hit a button by
     time_requested amount of time
     time_requested = time needed to accomplish button press
     button = button that needs to be pressed
