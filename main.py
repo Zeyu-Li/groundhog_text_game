@@ -168,17 +168,28 @@ class Fight:
     def normal(self, enemy_, time, possible_button):
         """ this is how a normal non-tutorial enemy is fought """
 
-        alive = True
-        while alive:
-            self.enemy_attack()
+        my_list = ['A'] + ['B'] * 9
+        if random.choice(my_list) == 'B':
+            self.enemy_attack(possible_button, time, enemy_)
+            if quit_flag:
+                return "quit"
+
+        Options(2).event_2
             # TODO: fight options
 
     def tutorial_enemy_attack(self, enemy):
         """ tutorial enemy attack; It is impossible to die """
         special_loops(4, "A", enemy)
 
-    def enemy_attack(self):
+    def enemy_attack(self, possible_button, time, enemy_):
         """ first real enemy (can die) """
+
+        button = str(random.choice(possible_button))
+        loop(time, button, enemy_, 2)
+        if quit_flag == "Over":
+            game_over()
+        elif quit_flag:
+            return "quit"
         # TODO: enemy attack
 
 
@@ -342,6 +353,48 @@ def special_loops(time_requested, button, enemy, tries=4):
                 slow("It's getting closer")
 
 
+def loop(time_requested, button, enemy, tries=4):
+    """ sequence for tutorial fight; you must hit a button by
+    time_requested amount of time
+    time_requested = time needed to accomplish button press
+    button = button that needs to be pressed
+    enemy = attacking enemy
+    tries = number of tries till the enemy hits you"""
+
+    global enemies
+    global quit_flag
+
+    test = True
+    while test:
+        for i in range(tries):
+
+            start_time = time.time()
+            user_input = str(input(f"Hit \"{button}\": ").strip()).upper()
+            end_time = time.time()
+
+            if user_input == button:
+                if end_time - start_time > time_requested:
+                    print("Too slow. Try again\n")
+                    continue
+
+                slow("You dodged successfully")
+                return True
+            elif user_input in ("Q", "QUIT"):
+                quit_flag = True
+                return 0
+            else:
+                if i == tries-1:
+                    if not values['hp'] - enemies[enemy]["attack"] == 0:
+                        values['hp'] = values['hp'] - enemies[enemy]["attack"]
+                        slow(f"The {enemy} has hit you!")
+                        slow("You took 1 damage.")
+                        slow(f"Now you have {values['hp']} hp left")
+                        continue
+                    quit_flag = "Over"
+                    return 0
+                slow("It's getting closer")
+
+
 def level_up():
     """ level up sequence """
 
@@ -353,6 +406,21 @@ def level_up():
     slow(f"Good job, you leveled up\n HP: {max_hp}, Attack: {attack} ")
 
     values["hp"] = values["max_hp"]
+
+
+def game_over():
+    """ gameover function re inits all values and resets the program """
+
+    slow("Game Over")
+    time.sleep(1)
+
+    global values
+    values = {}
+    global quit_flag
+    quit_flag = False
+
+    main()
+    os._exit(0)
 
 
 def end():
@@ -371,10 +439,9 @@ def end():
 
         json.dump(stats, fp)
 
-# main call function
-
 
 def main():
+    """ main call function """
 
     option = Cover().options()
 
