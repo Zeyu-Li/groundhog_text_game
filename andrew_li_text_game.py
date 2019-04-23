@@ -10,7 +10,7 @@ This is a text-based Python game that puts you at the site of the action
 """
 
 # import from custom module
-from cout import slow, stylized
+from cout import Text
 # import from STL
 import json
 import os
@@ -18,6 +18,7 @@ import time
 import random
 
 # global vars
+T = Text()
 global values
 values = {}
 global quit_flag
@@ -29,6 +30,10 @@ enemies = {
         'hp': 2,
         'attack': 1
 
+    },
+    "spider": {
+        'hp': 9,
+        'attack': 2
     }
 }
 
@@ -37,6 +42,7 @@ class Cover:
     """ this class houses the cover screen for the game when it loads in """
 
     def __init__(self):
+        """ outputs title screen art/stylized text """
         output("title", "p")
 
     def options(self):
@@ -45,36 +51,33 @@ class Cover:
         test = True
         load = stats()
         while test:
-            stylized("NEW GAME")
+            T.stylized("NEW GAME")
             if load:
-                stylized("LOAD GAME")
-            stylized("HELP")
-            stylized("ABOUT")
-            stylized("QUIT")
+                T.stylized("LOAD GAME")
+            T.stylized("HELP")
+            T.stylized("ABOUT")
+            T.stylized("QUIT")
 
             option = user_input()
 
-            if option in ("NEW GAME", "NEW", "N"):
+            if option in {"NEW GAME", "NEW", "N"}:
                 os.system('cls')
                 os.remove("stats.json")
                 stats()
                 return "new"
-            elif option in ("LOAD GAME", "LOAD", "L"):
+            elif option in {"LOAD GAME", "LOAD", "L"}:
                 os.system('cls')
                 return "load"
-            elif option in ("HELP", "H"):
+            elif option in {"HELP", "H"}:
                 self.help()
                 continue
-            elif option in ("ABOUT", "A"):
+            elif option in {"ABOUT", "A"}:
                 self.about()
                 continue
-            elif option in ("QUIT", "Q"):
-                slow("\nThanks for playing")
-                time.sleep(1.2)
-                os.system('cls')
-                return "break"
+            elif option in {"QUIT", "Q"}:
+                quit()
             else:
-                print("\n Your input is not recognized, please try again\n")
+                print("\nYour input is not recognized, please try again\n")
 
     def help(self):
         """ Outputs help text """
@@ -95,24 +98,23 @@ class Options:
     global quit_flag
 
     def event_1(self, option):
-        """ first intro event """
+        """ first intro event; option argument represents the user input """
 
         for action in option:
-            if action in ("LOOK", "OBSERVE", "SEE", "PEEK", "VIEW"):
-                slow("\nYou observe the hole and find that it is large enough")
-                slow("for you to climb in")
+            if action in {"LOOK", "OBSERVE", "SEE", "PEEK", "VIEW"}:
+                T.slow("\nYou observe the hole and find that it is large" +
+                       "\nenough for you to climb in")
                 return True
-            elif action in ("CRAWL", "CLIMB", "SNEAK"):
+            elif action in {"CRAWL", "CLIMB", "SNEAK"}:
                 return False
-            elif action in ("HINT", "AID", "HELP"):
-                slow("Hint: What would a groundhog do?")
+            elif action in {"HINT", "AID", "HELP"}:
+                T.slow("Hint: What would a groundhog do?")
                 return True
-            elif action in ("QUIT", "Q"):
-                quit_flag = True
-                return False
+            elif action in {"QUIT", "Q"}:
+                quit()
             else:
-                slow("Sorry, this action is not permitted, please try again")
-                slow("or enter help")
+                T.slow("Sorry, this action is not permitted, please try\n" +
+                       "again or enter help")
                 return True
 
     def event_2(self):
@@ -125,25 +127,45 @@ class Options:
             option = user_input()
 
             if option == "ATTACK":
-                slow("You hit the first groundhog and it falls to the ground")
-                break
+                return "ATTACK"
             elif option == "HIDE":
-                slow("Stop hiding")
+                T.slow("Stop hiding")
                 continue
             elif option == "RUN":
-                slow("Don't be a coward")
-                continue
-            elif option in ("QUIT", "Q"):
-                quit_flag = True
-                return 0
+                T.slow("You try to run away but it doesn't work")
+                return "RUN"
+            elif option in {"QUIT", "Q"}:
+                quit()
             else:
-                slow("That is not a possible option")
+                T.slow("That is not a possible option")
+
+    def cave(self, option):
+        """ events in the cave """
+
+        for action in option:
+            if action in {"LOOK", "OBSERVE", "SEE", "PEEK", "VIEW"}:
+                T.slow("\nYou observe the archway to the room and find\n" +
+                       "that it is large enough for you to walk in")
+                return True
+            elif action in {"CRAWL", "GO", "SNEAK", "WALK", "JOG", "RUN"}:
+                return False
+            elif action in {"HINT", "AID", "HELP"}:
+                T.slow("Hint: Just go into the room and " +
+                       "don't think if the consequences")
+                return True
+            elif action in {"QUIT", "Q"}:
+                quit()
+            else:
+                T.slow("Sorry, this action is not permitted, please try\n" +
+                       "again or enter help")
+                return True
 
 
 class Fight:
     """ class for fight sequences """
 
     global enemies
+    global values
     global quit_flag
 
     def tutorial(self):
@@ -152,15 +174,20 @@ class Fight:
         self.tutorial_enemy_attack("groundhog")
         if quit_flag:
             quit()
-        slow("Now you have dodged the groundhog and there is time to do" +
-             "something. What do you do?")
+        T.slow("Now you have dodged the groundhog and there is time to do\n" +
+               "something. What do you do?")
 
-        Options().event_2()
-
-        if quit_flag:
-            quit()
+        while True:
+            if Options().event_2() == "RUN":
+                T.slow("The groundhog is still chasing you")
+                continue
+            else:
+                T.slow("You have defeated the groundhog")
+                break
 
         level_up()
+
+        time.sleep(1)
 
     def normal(self, enemy_, time, possible_button):
         """ this is how a normal non-tutorial enemy is fought """
@@ -168,14 +195,19 @@ class Fight:
         my_list = ['A'] + ['B'] * 9
         if random.choice(my_list) == 'B':
             self.enemy_attack(possible_button, time, enemy_)
-            if quit_flag:
-                quit()
 
-        Options().event_2
-        # TODO: fight options
-
-        if quit_flag:
-            quit()
+        while True:
+            if Options().event_2() == "RUN":
+                self.enemy_attack(possible_button, time, enemy_)
+            else:
+                enemies[enemy_]['hp'] = enemies[enemy_]['hp'] - values['hp']
+                enemy_hp = enemies[enemy_]['hp']
+                if enemies[enemy_]['hp'] > 0:
+                    T.slow(f"You hit the {enemy_} and it has {enemy_hp} hp")
+                    self.enemy_attack(possible_button, time, enemy_)
+                else:
+                    T.slow(f"The {enemy_} falls")
+                    return 0
 
     def tutorial_enemy_attack(self, enemy):
         """ tutorial enemy attack; It is impossible to die """
@@ -193,9 +225,10 @@ class Fight:
 
 
 class Events:
-    """ timeline of events """
+    """ timeline of events; primary class that drives all the pieces """
 
     global quit_flag
+    global values
 
     def begin(self):
         """ tutorial """
@@ -205,9 +238,6 @@ class Events:
         while test:
             request = user_input().split(" ")
             test = Options().event_1(request)
-
-        if quit_flag:
-            quit()
 
         values["area"] = 1
 
@@ -226,27 +256,61 @@ class Events:
 
         self.two()
 
-        if quit_flag:
-            quit()
-
     def two(self):
         """ another fight sequence """
 
-        slow("Now, you have defeated the groundhog, a second one approaches")
+        T.slow("Now, you have defeated the groundhog, a second one approaches")
         Fight().normal("groundhog", 2, ("B", "A"))
 
         if quit_flag:
             quit()
+
+        values["hp"] = values["max_hp"]
+        hp = values["hp"]
+
+        T.slow("As you defeat the groundhog, you absorb the nutrients from\n" +
+               f"the groundhogs and recover your HP back to {hp}")
 
         values["area"] = 3
 
         self.three()
 
     def three(self):
-        pass
-        # TODO: third event (another looking sequence)
+        """ last objective (another looking sequence) """
+
+        T.slow("You gather your breath and see that the cavernous space is\n" +
+               "dark and wide. A streak of light rests in the corner of\n" +
+               "your eye. It appears to be in a small room. What do you do?")
+
+        test = True
+        while test:
+            request = user_input().split(" ")
+            test = Options().cave(request)
+
+        T.slow("You walk to the archway and you spot a giant spider\n" +
+               "Unfortunately, as you back away slowly, it saw\n" +
+               "you and smacks into the archway")
+
+        time.sleep(1.5)
 
         values["area"] = 4
+
+        self.four()
+
+    def four(self):
+        """ boss battle """
+
+        Fight().normal("spider", 1.5, ("Z", "X", "W", "F"))
+
+        T.slow("As the spider dies, you go into the room and find an\n" +
+               "opening and walk into the light")
+        T.slow("To be continued")
+
+        time.sleep(1.5)
+
+        quit()
+
+        # END OF THE PROGRAM
 
 
 # start of standard functions
@@ -307,7 +371,7 @@ def output(part, type_):
     if (type_ == "p"):
         print(text[part])
     elif (type_ == "s"):
-        slow(text[part])
+        T.slow(text[part])
 
 
 def special_loops(time_requested, button, enemy, tries=4):
@@ -333,7 +397,7 @@ def special_loops(time_requested, button, enemy, tries=4):
                     print("Too slow. Try again\n")
                     continue
 
-                slow("You dodged successfully")
+                T.slow("You dodged successfully")
                 return True
             elif user_input in ("Q", "QUIT"):
                 quit_flag = True
@@ -342,13 +406,13 @@ def special_loops(time_requested, button, enemy, tries=4):
                 if i == tries-1:
                     if not values['hp'] - enemies[enemy]["attack"] == 0:
                         values['hp'] = values['hp'] - enemies[enemy]["attack"]
-                        slow(f"The {enemy} has hit you!")
-                        slow("You took 1 damage.")
-                        slow(f"Now you have {values['hp']} hp left")
+                        T.slow(f"The {enemy} has hit you!\n" +
+                               "You took 1 damage.\n" +
+                               f"Now you have {values['hp']} hp left\n")
                         continue
-                    slow("The groundhog missed")
+                    T.slow("The groundhog missed")
                     continue
-                slow("It's getting closer")
+                T.slow("It's getting closer")
 
 
 def loop(time_requested, button, enemy, tries=4):
@@ -357,7 +421,7 @@ def loop(time_requested, button, enemy, tries=4):
     time_requested = time needed to accomplish button press
     button = button that needs to be pressed
     enemy = attacking enemy
-    tries = number of tries till the enemy hits you"""
+    tries = number of tries till the enemy hits you """
 
     global enemies
     global quit_flag
@@ -375,33 +439,34 @@ def loop(time_requested, button, enemy, tries=4):
                     print("Too slow. Try again\n")
                     continue
 
-                slow("You dodged successfully")
+                T.slow("You dodged successfully")
                 return True
             elif user_input in ("Q", "QUIT"):
                 quit_flag = True
                 return 0
             else:
-                if i == tries-1:
+                if i == tries - 1:
                     if not values['hp'] - enemies[enemy]["attack"] == 0:
                         values['hp'] = values['hp'] - enemies[enemy]["attack"]
-                        slow(f"The {enemy} has hit you!")
-                        slow("You took 1 damage.")
-                        slow(f"Now you have {values['hp']} hp left")
+                        T.slow(f"The {enemy} has hit you!\n" +
+                               "You took 1 damage.\n" +
+                               f"Now you have {values['hp']} hp left\n")
                         continue
                     quit_flag = "Over"
                     return 0
-                slow("It's getting closer")
+                T.slow("It's getting closer")
 
 
 def level_up():
     """ level up sequence """
 
+    # level up is always +1 attack and +1 or +2 hp
     values["attack"] = values["attack"] + 1
     values["max_hp"] = values["max_hp"] + random.randint(1, 2)
     max_hp = values["max_hp"]
     attack = values["attack"]
 
-    slow(f"Good job, you leveled up\n HP: {max_hp}, Attack: {attack} ")
+    T.slow(f"Good job, you leveled up\n HP: {max_hp}, Attack: {attack} ")
 
     values["hp"] = values["max_hp"]
 
@@ -409,7 +474,7 @@ def level_up():
 def game_over():
     """ gameover function re inits all values and resets the program """
 
-    slow("Game Over")
+    T.slow("Game Over")
     time.sleep(1)
 
     global values
@@ -417,6 +482,7 @@ def game_over():
     global quit_flag
     quit_flag = False
 
+    # resets program in event of game over
     main()
     os._exit(0)
 
@@ -424,8 +490,9 @@ def game_over():
 def quit():
     """ function for everytime you select quit """
 
+    # stores char values and exits program
     end()
-    slow("\nThanks for playing")
+    T.slow("\nThanks for playing")
     time.sleep(1.2)
     os.system('cls')
     os._exit(0)
@@ -456,7 +523,7 @@ def main():
     if option == "new":
         Events().begin()
     elif option == "load":
-        # switch statements
+        # switch statements for which area you are in
         area = values["area"]
         if area == 1:
             Events().one()
@@ -464,6 +531,13 @@ def main():
             Events().two()
         elif area == 3:
             Events().three()
+        elif area == 4:
+            T.slow("The spider is attacking you")
+            time.sleep(1)
+            Events().four()
+        else:
+            T.slow("Unknown error in loading")
+            quit()
     else:
         return 0
 
