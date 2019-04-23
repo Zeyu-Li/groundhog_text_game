@@ -94,17 +94,10 @@ class Options:
 
     global quit_flag
 
-    def __init__(self, options):
-        """ get user input """
-
-        if options == 2:
-            print("| Attack | Run | Hide | Quit |")
-        self.option = user_input().split(" ")
-
-    def event_1(self):
+    def event_1(self, option):
         """ first intro event """
 
-        for action in self.option:
+        for action in option:
             if action in ("LOOK", "OBSERVE", "SEE", "PEEK", "VIEW"):
                 slow("\nYou observe the hole and find that it is large enough")
                 slow("for you to climb in")
@@ -127,16 +120,20 @@ class Options:
 
         test = True
         while test:
-            if self.option == "ATTACK":
+
+            option = print("| Attack | Run | Hide | Quit |")
+            option = user_input()
+
+            if option == "ATTACK":
                 slow("You hit the first groundhog and it falls to the ground")
                 break
-            elif self.option == "HIDE":
+            elif option == "HIDE":
                 slow("Stop hiding")
                 continue
-            elif self.option == "RUN":
+            elif option == "RUN":
                 slow("Don't be a coward")
                 continue
-            elif self.option in ("QUIT", "Q"):
+            elif option in ("QUIT", "Q"):
                 quit_flag = True
                 return 0
             else:
@@ -154,14 +151,14 @@ class Fight:
 
         self.tutorial_enemy_attack("groundhog")
         if quit_flag:
-            return "quit"
+            quit()
         slow("Now you have dodged the groundhog and there is time to do" +
              "something. What do you do?")
 
-        Options(2).event_2()
+        Options().event_2()
 
         if quit_flag:
-            return "quit"
+            quit()
 
         level_up()
 
@@ -172,10 +169,13 @@ class Fight:
         if random.choice(my_list) == 'B':
             self.enemy_attack(possible_button, time, enemy_)
             if quit_flag:
-                return "quit"
+                quit()
 
-        Options(2).event_2
+        Options().event_2
         # TODO: fight options
+
+        if quit_flag:
+            quit()
 
     def tutorial_enemy_attack(self, enemy):
         """ tutorial enemy attack; It is impossible to die """
@@ -189,7 +189,7 @@ class Fight:
         if quit_flag == "Over":
             game_over()
         elif quit_flag:
-            return "quit"
+            quit()
 
 
 class Events:
@@ -203,10 +203,11 @@ class Events:
         output("Ev1", "s")
         test = True
         while test:
-            test = Options(1).event_1()
+            request = user_input().split(" ")
+            test = Options().event_1(request)
 
         if quit_flag:
-            return 0
+            quit()
 
         values["area"] = 1
 
@@ -219,11 +220,14 @@ class Events:
         Fight().tutorial()
 
         if quit_flag:
-            return 0
+            quit()
 
         values["area"] = 2
 
         self.two()
+
+        if quit_flag:
+            quit()
 
     def two(self):
         """ another fight sequence """
@@ -232,7 +236,7 @@ class Events:
         Fight().normal("groundhog", 2, ("B", "A"))
 
         if quit_flag:
-            return 0
+            quit()
 
         values["area"] = 3
 
@@ -244,11 +248,6 @@ class Events:
 
         values["area"] = 4
 
-        self.four()
-
-    def four(self):
-        pass
-        return "done"
 
 # start of standard functions
 
@@ -317,7 +316,7 @@ def special_loops(time_requested, button, enemy, tries=4):
     time_requested = time needed to accomplish button press
     button = button that needs to be pressed
     enemy = attacking enemy
-    tries = number of tries till the enemy hits you"""
+    tries = number of tries till the enemy hits you """
 
     global enemies
     global quit_flag
@@ -422,6 +421,16 @@ def game_over():
     os._exit(0)
 
 
+def quit():
+    """ function for everytime you select quit """
+
+    end()
+    slow("\nThanks for playing")
+    time.sleep(1.2)
+    os.system('cls')
+    os._exit(0)
+
+
 def end():
     """ closing method that stores the values such as hp, attack, etc """
 
@@ -455,16 +464,10 @@ def main():
             Events().two()
         elif area == 3:
             Events().three()
-        elif area == 4:
-            Events().four()
     else:
         return 0
 
-    slow("\nThanks for playing")
-
-    end()
-    time.sleep(1.2)
-    os.system('cls')
+    quit()
 
 # system calls name
 if __name__ == "__main__":
