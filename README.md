@@ -10,7 +10,7 @@ This is a Python text-based game for school
 Yearning for sunlight to photosynthesize
 you venture with your newly mutated roots
 in hopes of reaching fresh air and sunlight
-As you wonder around on your studded roots,
+As you wander around on your studded roots,
 many mysteries arise including
 how did I come into being, what is
 the meaning of life, and why are there
